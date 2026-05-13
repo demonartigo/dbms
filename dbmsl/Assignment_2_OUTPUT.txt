@@ -1,0 +1,164 @@
+mysql -h 10.10.14.125 -u te{your roll number} -p
+
+create table PlacementDrive(
+Drive_id int primary key auto_increment,
+Pcompany_name varchar(20),
+package decimal(10,2),
+location varchar(20)
+);
+
+create table Training(
+T_id int primary key auto_increment,
+Tcompany_name varchar(20),
+T_Fee decimal(10,2),
+T_year year
+);
+
+create table Student(
+s_id int primary key auto_increment,
+Drive_id int,
+T_id int,
+s_name varchar(20),
+CGPA decimal(3,2),
+s_branch varchar(20),
+S_dob date,
+Foreign key (Drive_id) references PlacementDrive(Drive_id) on delete cascade,
+Foreign key (T_id) references Training(T_id) on delete cascade
+);
+
+INSERT INTO PlacementDrive (Pcompany_name, package, location) VALUES
+('Infosys', 30000, 'Pune'),
+('TCS', 40000, 'Mumbai'),
+('Wipro', 50000, 'Hyderabad'),
+('TechMahindra', 30000, 'Delhi');
+
+INSERT INTO Training (Tcompany_name, T_Fee, T_year) VALUES
+('Udemy', 10000, 2019),
+('Coursera', 12000, 2020),
+('edX', 15000, 2021),
+('Simplilearn', 13000, 2022);
+
+INSERT INTO Student (Drive_id, T_id, s_name, CGPA, s_branch, S_dob) VALUES
+(1, 1, 'Ankit Sharma', 8.2, 'Computer', '2000-01-01'),
+(2, 1, 'Deepa Kaur', 7.1, 'IT', '1999-03-21'),
+(3, 2, 'Amit Mehra', 6.8, 'Electronics', '1998-11-05'),
+(1, 1, 'Divya Nair', 9.3, 'Computer', '2001-05-14'),
+(4, 3, 'Raj Patel', 6.5, 'Mechanical', '2000-07-25'),
+(2, 4, 'Arun Verma', 7.8, 'IT', '1999-06-19'),
+(3, 2, 'Disha Kulkarni', 7.0, 'Computer', '2001-08-30'),
+(2, 3, 'Rahul Bose', 8.5, 'Civil', '2000-12-01'),
+(1, 1, 'Abhay Sinha', 6.9, 'IT', '1998-09-23'),
+(3, 3, 'Neha Rathi', 8.9, 'Computer', '2001-04-04');
+
+select * from PlacementDrive;
+select * from Training;
+select * from Student;
+
+select * from Student where (s_branch="Computer" OR s_branch="IT") AND (s_name like 'a%' OR s_name like 'd%');
++------+----------+------+----------------+------+----------+------------+
+| s_id | Drive_id | T_id | s_name         | CGPA | s_branch | S_dob      |
++------+----------+------+----------------+------+----------+------------+
+|    1 |        1 |    1 | Ankit Sharma   | 8.20 | Computer | 2000-01-01 |
+|    2 |        2 |    1 | Deepa Kaur     | 7.10 | IT       | 1999-03-21 |
+|    4 |        1 |    1 | Divya Nair     | 9.30 | Computer | 2001-05-14 |
+|    6 |        2 |    4 | Arun Verma     | 7.80 | IT       | 1999-06-19 |
+|    7 |        3 |    2 | Disha Kulkarni | 7.00 | Computer | 2001-08-30 |
+|    9 |        1 |    1 | Abhay Sinha    | 6.90 | IT       | 1998-09-23 |
++------+----------+------+----------------+------+----------+------------+
+
+
+select count(distinct Pcompany_name) as num_companies from PlacementDrive;
++---------------+
+| num_companies |
++---------------+
+|             4 |
++---------------+
+
+update Training set T_fee=1.15*T_fee where T_year=2019;
+select * from Training;
++------+---------------+----------+--------+
+| T_id | Tcompany_name | T_Fee    | T_year |
++------+---------------+----------+--------+
+|    1 | Udemy         | 11500.00 |   2019 |
+|    2 | Coursera      | 12000.00 |   2020 |
+|    3 | edX           | 15000.00 |   2021 |
+|    4 | Simplilearn   | 13000.00 |   2022 |
++------+---------------+----------+--------+
+
+delete from Student where CGPA<7;
+select * from Student;
++------+----------+------+----------------+------+----------+------------+
+| s_id | Drive_id | T_id | s_name         | CGPA | s_branch | S_dob      |
++------+----------+------+----------------+------+----------+------------+
+|    1 |        1 |    1 | Ankit Sharma   | 8.20 | Computer | 2000-01-01 |
+|    2 |        2 |    1 | Deepa Kaur     | 7.10 | IT       | 1999-03-21 |
+|    4 |        1 |    1 | Divya Nair     | 9.30 | Computer | 2001-05-14 |
+|    6 |        2 |    4 | Arun Verma     | 7.80 | IT       | 1999-06-19 |
+|    7 |        3 |    2 | Disha Kulkarni | 7.00 | Computer | 2001-08-30 |
+|    8 |        2 |    3 | Rahul Bose     | 8.50 | Civil    | 2000-12-01 |
+|   10 |        3 |    3 | Neha Rathi     | 8.90 | Computer | 2001-04-04 |
++------+----------+------+----------------+------+----------+------------+
+
+select Pcompany_name from PlacementDrive where (location="Pune" OR location="Mumbai");
++---------------+
+| Pcompany_name |
++---------------+
+| Infosys       |
+| TCS           |
++---------------+
+
+select s_name from Student where T_id in (select T_id from Training where T_year in (2019,2021))
+
+
+SELECT s_name FROM Student WHERE CGPA = (SELECT MAX(CGPA) FROM Student);
++------------+
+| s_name     |
++------------+
+| Divya Nair |
++------------+
+
+
+SELECT s_name FROM Student WHERE CGPA BETWEEN 7 AND 9;
++----------------+
+| s_name         |
++----------------+
+| Ankit Sharma   |
+| Deepa Kaur     |
+| Arun Verma     |
+| Disha Kulkarni |
+| Rahul Bose     |
+| Neha Rathi     |
++----------------+
+
+SELECT s.s_name, s.T_id FROM Student s JOIN Training t ON s.T_id = t.T_id ORDER BY t.T_Fee DESC;
++----------------+------+
+| s_name         | T_id |
++----------------+------+
+| Rahul Bose     |    3 |
+| Neha Rathi     |    3 |
+| Arun Verma     |    4 |
+| Disha Kulkarni |    2 |
+| Ankit Sharma   |    1 |
+| Deepa Kaur     |    1 |
+| Divya Nair     |    1 |
++----------------+------+
+
+SELECT p.Pcompany_name, s.s_name, p.location, p.package FROM Student s
+JOIN PlacementDrive p ON s.Drive_id = p.Drive_id WHERE p.package IN (30000, 40000, 50000);
++---------------+----------------+-----------+----------+
+| Pcompany_name | s_name         | location  | package  |
++---------------+----------------+-----------+----------+
+| Infosys       | Ankit Sharma   | Pune      | 30000.00 |
+| TCS           | Deepa Kaur     | Mumbai    | 40000.00 |
+| Infosys       | Divya Nair     | Pune      | 30000.00 |
+| TCS           | Arun Verma     | Mumbai    | 40000.00 |
+| Wipro         | Disha Kulkarni | Hyderabad | 50000.00 |
+| TCS           | Rahul Bose     | Mumbai    | 40000.00 |
+| Wipro         | Neha Rathi     | Hyderabad | 50000.00 |
++---------------+----------------+-----------+----------+
+
+
+
+
+
+

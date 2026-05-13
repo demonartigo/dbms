@@ -1,0 +1,73 @@
+CREATE TABLE Borrower (
+	Roll_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	Name VARCHAR(16),
+	DOI DATE,
+	Name_book VARCHAR(16),
+	Status VARCHAR(1)
+);
+
+CREATE TABLE Fine (
+	Roll_no INT NOT NULL,
+	Date INT,
+	Amt INT
+);
+
+INSERT INTO Borrower (Name, DOI, Status) VALUES
+('Karan', '2025-07-20', 'I'),
+('Aisha', '2025-07-15', 'I'),
+('Ravi', '2025-06-30', 'I'),
+('Neha', '2025-07-10', 'I'),
+('Arjun', '2025-07-25', 'I');
+
+INSERT INTO Borrower (Name, Status) VALUES ('No_date', 'I');
+
+DELIMITER #
+
+CREATE PROCEDURE Insert_Fine(IN Roll INT)
+BEGIN
+    DECLARE D DATE;
+    DECLARE DATE_TODAY DATE DEFAULT '2025-08-06';
+    DECLARE diff INT;
+    DECLARE amt INT;
+    DECLARE handler_action CONDITION FOR SQLSTATE '45000';
+    DECLARE invalid_roll CONDITION FOR SQLSTATE '45001';
+
+    DECLARE EXIT HANDLER FOR NOT FOUND
+    BEGIN
+        SELECT 'No record found for this Roll No' AS error_message;
+        SET amt = 0;
+    END;
+    IF Roll > 80 THEN
+	SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT = 'Invalid Roll Number!';
+    END IF;
+    
+    SELECT DOI INTO D FROM Borrower WHERE Roll_no = Roll;
+
+    IF D IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Date of Issue is null!';
+    END IF;
+
+    SET diff = DATEDIFF(DATE_TODAY, D);
+
+    IF diff < 31 THEN
+        SET amt = GREATEST((diff - 15) * 5, 0);
+    ELSE
+        SET amt = ((diff - 30) * 50) + 75;
+    END IF;
+
+    IF diff > 14 THEN
+        INSERT INTO Fine (Roll_no, Date, Amt) VALUES (Roll, diff, amt);
+    END IF;
+
+    UPDATE Borrower 
+    SET Status = 'R'
+    WHERE Roll_no = Roll;
+
+    SELECT CONCAT('Fine of ₹', amt, ' added for Roll No ', Roll) AS success_message;
+
+END #
+
+DELIMITER ;
+
+CALL Insert_Fine (2);
+

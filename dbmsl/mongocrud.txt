@@ -1,0 +1,58 @@
+mongosh
+
+use companyDB
+
+// STEP 3: Create Collection and INSERT Data
+db.employee.insertMany([
+  {
+    empId: 101,
+    name: "Rahul Sharma",
+    department: "IT",
+    salary: 55000,
+    city: "Pune"
+  },
+  {
+    empId: 102,
+    name: "Priya Singh",
+    department: "HR",
+    salary: 45000,
+    city: "Mumbai"
+  },
+  {
+    empId: 103,
+    name: "Amit Verma",
+    department: "Finance",
+    salary: 60000,
+    city: "Delhi"
+  }
+])
+
+// ---------------- READ ----------------
+
+// Display all employees
+db.employee.find()
+
+// Display formatted output
+db.employee.find().pretty()
+
+// Find one employee
+db.employee.findOne({ empId: 101 })
+
+// ---------------- UPDATE ----------------
+
+// Update salary
+db.employee.updateOne(
+  { empId: 101 },
+  { $set: { salary: 70000 } }
+)
+
+// Show updated data
+db.employee.find({ empId: 101 }).pretty()
+
+// ---------------- DELETE ----------------
+
+// Delete one employee
+db.employee.deleteOne({ empId: 102 })
+
+// Show final data
+db.employee.find().pretty()

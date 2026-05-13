@@ -1,0 +1,219 @@
+Assignment 3
+
+create table PlacementDrive(
+Drive_id int primary key auto_increment,
+Pcompany_name varchar(20),
+package decimal(10,2),
+location varchar(20)
+);
+
+create table Training(
+T_id int primary key auto_increment,
+Tcompany_name varchar(20),
+T_Fee decimal(10,2),
+T_year year
+);
+
+create table Student(
+s_id int primary key auto_increment,
+Drive_id int,
+T_id int,
+s_name varchar(20),
+CGPA decimal(3,2),
+s_branch varchar(20),
+S_dob date,
+Foreign key (Drive_id) references PlacementDrive(Drive_id) on delete cascade,
+Foreign key (T_id) references Training(T_id) on delete cascade
+);
+
+INSERT INTO PlacementDrive (Pcompany_name, package, location) VALUES
+('Microsoft', 5.00, 'Thane'),
+('Google', 6.00, 'Mumbai'),
+('Infosys', 4.00, 'Pune'),
+('TCS', 5.00, 'Thane');
+
+INSERT INTO Training (Tcompany_name, T_Fee, T_year) VALUES
+('Microsoft', 25000.00, 2011),
+('Google', 18000.00, 2012),
+('Infosys', 22000.00, 2010),
+('IBM', 15000.00, 2013),
+('Microsoft', 27000.00, 2015);
+
+INSERT INTO Student (Drive_id, T_id, s_name, CGPA, s_branch, S_dob) VALUES
+(1, 1, 'Shantanu', 8.50, 'CSE', '1993-05-15'),
+(2, 2, 'Priya', 9.10, 'ECE', '1994-07-20'),
+(3, 3, 'Rahul', 7.90, 'ME', '1992-03-12'),
+(1, 4, 'Anjali', 8.20, 'CSE', '1993-09-10'),
+(4, 5, 'Amit', 9.30, 'IT', '1995-01-25');
+
+select * from PlacementDrive;
+select * from Training;
+select * from Student;
+
++----------+---------------+---------+----------+
+| Drive_id | Pcompany_name | package | location |
++----------+---------------+---------+----------+
+|        1 | Microsoft     |    5.00 | Thane    |
+|        2 | Google        |    6.00 | Mumbai   |
+|        3 | Infosys       |    4.00 | Pune     |
+|        4 | TCS           |    5.00 | Thane    |
++----------+---------------+---------+----------+
+
++------+---------------+----------+--------+
+| T_id | Tcompany_name | T_Fee    | T_year |
++------+---------------+----------+--------+
+|    1 | Microsoft     | 25000.00 |   2011 |
+|    2 | Google        | 18000.00 |   2012 |
+|    3 | Infosys       | 22000.00 |   2010 |
+|    4 | IBM           | 15000.00 |   2013 |
+|    5 | Microsoft     | 27000.00 |   2015 |
++------+---------------+----------+--------+
+
++------+----------+------+----------+------+----------+------------+
+| s_id | Drive_id | T_id | s_name   | CGPA | s_branch | S_dob      |
++------+----------+------+----------+------+----------+------------+
+|    1 |        1 |    1 | Shantanu | 8.50 | CSE      | 1993-05-15 |
+|    2 |        2 |    2 | Priya    | 9.10 | ECE      | 1994-07-20 |
+|    3 |        3 |    3 | Rahul    | 7.90 | ME       | 1992-03-12 |
+|    4 |        1 |    4 | Anjali   | 8.20 | CSE      | 1993-09-10 |
+|    5 |        4 |    5 | Amit     | 9.30 | IT       | 1995-01-25 |
++------+----------+------+----------+------+----------+------------+
+
+1. Find the Student details and Placement details using NATURAL JOIN.
+select * from Student NATURAL JOIN PlacementDrive;
++----------+------+------+----------+------+----------+------------+---------------+---------+----------+
+| Drive_id | s_id | T_id | s_name   | CGPA | s_branch | S_dob      | Pcompany_name | package | location |
++----------+------+------+----------+------+----------+------------+---------------+---------+----------+
+|        1 |    1 |    1 | Shantanu | 8.50 | CSE      | 1993-05-15 | Microsoft     |    5.00 | Thane    |
+|        2 |    2 |    2 | Priya    | 9.10 | ECE      | 1994-07-20 | Google        |    6.00 | Mumbai   |
+|        3 |    3 |    3 | Rahul    | 7.90 | ME       | 1992-03-12 | Infosys       |    4.00 | Pune     |
+|        1 |    4 |    4 | Anjali   | 8.20 | CSE      | 1993-09-10 | Microsoft     |    5.00 | Thane    |
+|        4 |    5 |    5 | Amit     | 9.30 | IT       | 1995-01-25 | TCS           |    5.00 | Thane    |
++----------+------+------+----------+------+----------+------------+---------------+---------
+
+2. Find all the student details with company_name who have conducted in same drive
+select s.*, p.Pcompany_name from Student s JOIN PlacementDrive p on s.Drive_id=p.Drive_id;
++------+----------+------+----------+------+----------+------------+---------------+
+| s_id | Drive_id | T_id | s_name   | CGPA | s_branch | S_dob      | Pcompany_name |
++------+----------+------+----------+------+----------+------------+---------------+
+|    1 |        1 |    1 | Shantanu | 8.50 | CSE      | 1993-05-15 | Microsoft     |
+|    2 |        2 |    2 | Priya    | 9.10 | ECE      | 1994-07-20 | Google        |
+|    3 |        3 |    3 | Rahul    | 7.90 | ME       | 1992-03-12 | Infosys       |
+|    4 |        1 |    4 | Anjali   | 8.20 | CSE      | 1993-09-10 | Microsoft     |
+|    5 |        4 |    5 | Amit     | 9.30 | IT       | 1995-01-25 | TCS           |
++------+----------+------+----------+------+----------+------------+---------------+
+
+3. List all the Student name and Student branch of Student having package 5 LPA
+select s.s_name, s.s_branch from Student s JOIN PlacementDrive p on s.Drive_id=p.Drive_id where p.package=5;
++----------+----------+
+| s_name   | s_branch |
++----------+----------+
+| Shantanu | CSE      |
+| Anjali   | CSE      |
+| Amit     | IT       |
++----------+----------+
+
+4. List all the student names ,company_name having T_fee more than 20000
+select s.s_name, t.Tcompany_name from Student s JOIN Training t on s.T_id=t.T_id where t.T_fee>20000;
++----------+---------------+
+| s_name   | Tcompany_name |
++----------+---------------+
+| Shantanu | Microsoft     |
+| Rahul    | Infosys       |
+| Amit     | Microsoft     |
++----------+---------------+
+
+5. Display all training details attended by “shantanu” in year 2011
+SELECT t.* FROM Student AS s JOIN Training AS t ON s.s_id=t.T_id
+WHERE s.s_name='Shantanu' AND t.T_year=2011;
++------+---------------+----------+--------+
+| T_id | Tcompany_name | T_Fee    | T_year |
++------+---------------+----------+--------+
+|    1 | Microsoft     | 25000.00 |   2011 |
++------+---------------+----------+--------+
+
+6. list the total number of companies who conduct training before 2015
+SELECT COUNT(DISTINCT Tcompany_name) FROM Training WHERE T_year<2015;
++-------------------------------+
+| COUNT(DISTINCT Tcompany_name) |
++-------------------------------+
+|                             4 |
++-------------------------------+
+
+7. List the students name with company ‘Microsoft’ and location ’Thane'
+SELECT s.s_name FROM Student AS s JOIN PlacementDrive as p ON s.Drive_id=p.Drive_id 
+WHERE p.Pcompany_name='Microsoft' AND p.location='Thane';
++----------+
+| s_name   |
++----------+
+| Shantanu |
+| Anjali   |
++----------+
+
+8. Find the names of all Students who have joined ‘Microsoft ‘ training in 2015 .
+SELECT s.s_name FROM Student AS s JOIN Training AS t ON s.T_id=t.T_id WHERE 
+t.Tcompany_name='Microsoft' AND t.T_year=2015;
++--------+
+| s_name |
++--------+
+| Amit   |
++--------+
+
+9. Create a view showing the Student and Training details.
+CREATE VIEW StudentTrainingView AS
+SELECT 
+    S.s_id, S.s_name, S.CGPA, S.s_branch, S.S_dob,
+    T.Tcompany_name, T.T_Fee, T.T_year
+FROM Student S JOIN Training T ON S.T_id = T.T_id;
+
+SELECT * FROM StudentTrainingView;
++------+----------+------+----------+------------+---------------+----------+--------+
+| s_id | s_name   | CGPA | s_branch | S_dob      | Tcompany_name | T_Fee    | T_year |
++------+----------+------+----------+------------+---------------+----------+--------+
+|    1 | Shantanu | 8.50 | CSE      | 1993-05-15 | Microsoft     | 25000.00 |   2011 |
+|    2 | Priya    | 9.10 | ECE      | 1994-07-20 | Google        | 18000.00 |   2012 |
+|    3 | Rahul    | 7.90 | ME       | 1992-03-12 | Infosys       | 22000.00 |   2010 |
+|    4 | Anjali   | 8.20 | CSE      | 1993-09-10 | IBM           | 15000.00 |   2013 |
+|    5 | Amit     | 9.30 | IT       | 1995-01-25 | Microsoft     | 27000.00 |   2015 |
+|    6 | Nupoor   | 9.45 | CSE      | 2005-05-23 | IBM           | 15000.00 |   2013 |
++------+----------+------+----------+------------+---------------+----------+--------+
+
+
+10. Perform Manipulation on simple view-Insert, update, delete, drop view.
+
+INSERT INTO StudentTrainingView (s_id, s_name, CGPA, s_branch, S_dob, Tcompany_name, T_Fee, T_year)
+VALUES (6, 'Riya', 8.75, 'EEE', '1995-06-30', 'IBM', 16000.00, 2013);
+
+UPDATE StudentTrainingView
+SET CGPA = 9.00
+WHERE s_name = 'Shantanu';
++------+----------+------+----------+------------+---------------+----------+--------+
+| s_id | s_name   | CGPA | s_branch | S_dob      | Tcompany_name | T_Fee    | T_year |
++------+----------+------+----------+------------+---------------+----------+--------+
+|    1 | Shantanu | 9.00 | CSE      | 1993-05-15 | Microsoft     | 25000.00 |   2011 |
+|    2 | Priya    | 9.10 | ECE      | 1994-07-20 | Google        | 18000.00 |   2012 |
+|    3 | Rahul    | 7.90 | ME       | 1992-03-12 | Infosys       | 22000.00 |   2010 |
+|    4 | Anjali   | 8.20 | CSE      | 1993-09-10 | IBM           | 15000.00 |   2013 |
+|    5 | Amit     | 9.30 | IT       | 1995-01-25 | Microsoft     | 27000.00 |   2015 |
+|    6 | Nupoor   | 9.45 | CSE      | 2005-05-23 | IBM           | 15000.00 |   2013 |
++------+----------+------+----------+------------+---------------+----------+--------+
+
+DELETE FROM StudentTrainingView
+WHERE s_name = 'Rahul';
+
+DROP VIEW StudentTrainingView;
+
+
+
+create view V1 as select * from Student where CGPA>8;
+select * from V1;
++------+----------+------+----------+------+----------+------------+
+| s_id | Drive_id | T_id | s_name   | CGPA | s_branch | S_dob      |
++------+----------+------+----------+------+----------+------------+
+|    1 |        1 |    1 | Shantanu | 8.50 | CSE      | 1993-05-15 |
+|    2 |        2 |    2 | Priya    | 9.10 | ECE      | 1994-07-20 |
+|    4 |        1 |    4 | Anjali   | 8.20 | CSE      | 1993-09-10 |
+|    5 |        4 |    5 | Amit     | 9.30 | IT       | 1995-01-25 |
++------+----------+------+----------+------+----------+------------+
+
+insert into V1 values(6,2,4,'Nupoor',9.45,'CSE', '2005-05-23');
